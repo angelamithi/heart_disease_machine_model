@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+
 from flask import Blueprint, make_response, jsonify
 from flask_restful import Api, Resource, reqparse
 
@@ -10,7 +11,8 @@ Classification_bp = Blueprint('classification_bp', __name__)
 api = Api(Classification_bp)
 
 # Load the classification model
-model = pickle.load(open("gs_log_model_1.pkl", "rb"))
+model = pickle.load(open("../gs_log_reg_model_6.pkl", "rb"))
+
 
 post_args = reqparse.RequestParser()
 post_args.add_argument('age', type=float, required=True, help="age is required")
@@ -27,8 +29,13 @@ post_args.add_argument('slope', type=float, required=True, help="slope is requir
 post_args.add_argument('ca', type=float, required=True, help="ca is required")
 post_args.add_argument('thal', type=float, required=True, help="thal is required")
 
-class ModelPrediction(Resource):
+class Home(Resource):
     def get(self):
+        return "Heart Disease Prediction Model"
+api.add_resource(Home,"/")
+
+class ModelPrediction(Resource):
+    def post(self):
         args = post_args.parse_args()
         
         # Mapping sex to 1 (male) or 0 (female)
@@ -59,7 +66,9 @@ class ModelPrediction(Resource):
         
         features = np.array([all_features])
         prediction = model.predict(features)
-        response = make_response(jsonify(prediction), 200)
+        # Convert prediction to a Python list
+        prediction_list = prediction.tolist()
+        response = make_response(jsonify(prediction_list), 200)
         return response
 
 api.add_resource(ModelPrediction, "/predict")

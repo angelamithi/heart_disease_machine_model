@@ -1,4 +1,7 @@
 import numpy as np
+import sys 
+## !{sys.executable} -m pip install scikit-learn
+
 from flask import Flask
 from flask_cors import CORS
 from routes.model import Classification_bp
