@@ -19,6 +19,7 @@ const Predict = () => {
 
   const [formData, setFormData] = useState(initialFormData);
   const [predictionResult, setPredictionResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,6 +27,16 @@ const Predict = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Check for required fields
+    const requiredFields = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+
+    if (missingFields.length > 0) {
+      setError(`${missingFields.join(', ')} is required`);
+      return;
+    }
+
     fetch('http://127.0.0.1:5000/predict', {
       method: 'POST',
       headers: {
@@ -42,20 +53,24 @@ const Predict = () => {
       } else {
         setPredictionResult('Heart disease predicted');
       }
+      setError(null);
     })
     .catch(error => {
       console.error('Error:', error);
+      setError('Error occurred while processing the request');
     });
   };
 
   const handleReset = () => {
     setFormData(initialFormData);
     setPredictionResult(null);
+    setError(null);
   };
   return (
     <div>
-   
+     <h4>Enter Patient's vital signs..</h4>
     <form className='prediction-form' onSubmit={handleSubmit}>
+    
       <label>
         Age:
         <input type="text" name="age" value={formData.age} onChange={handleChange} />
@@ -155,6 +170,7 @@ const Predict = () => {
     </form>
     
     {predictionResult && <h2>{predictionResult}</h2>}
+    {error && <p>{error}</p>}
     </div>
   );
 };

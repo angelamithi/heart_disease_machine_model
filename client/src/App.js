@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <header className="App-header">
       <img src={heart} alt="heart" />
-        <h1>Heart Disease Prediction Model</h1>
+        <h1>Heart Disease Prediction System</h1>
        
       </header>
       <section>
